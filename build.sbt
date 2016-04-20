@@ -3,16 +3,16 @@ import com.typesafe.sbt.SbtScalariform.ScalariformKeys
 import scalariform.formatter.preferences._
 import sbtrelease.ReleasePlugin
 
-lazy val quill = 
+lazy val quill =
   (project in file("."))
     .settings(tutSettings ++ commonSettings ++ Seq(
       scalaVersion := "2.11.8"
     ))
     .settings(`tut-settings`:_*)
-    .dependsOn(`quill-core`, `quill-sql`, `quill-jdbc`, `quill-finagle-mysql`, `quill-async`, `quill-cassandra`)
-    .aggregate(`quill-core`, `quill-sql`, `quill-jdbc`, `quill-finagle-mysql`, `quill-async`, `quill-cassandra`)
+    .dependsOn(`quill-core`, `quill-sql`, `quill-jdbc`, `quill-finagle-mysql`, `quill-async`, `quill-cassandra`, `quill-couchbase`)
+    .aggregate(`quill-core`, `quill-sql`, `quill-jdbc`, `quill-finagle-mysql`, `quill-async`, `quill-cassandra`, `quill-couchbase`)
 
-lazy val `quill-core` = 
+lazy val `quill-core` =
   (project in file("quill-core"))
     .settings(commonSettings: _*)
     .settings(mimaSettings)
@@ -22,13 +22,13 @@ lazy val `quill-core` =
       "org.scala-lang"             %  "scala-reflect" % scalaVersion.value
     ))
 
-lazy val `quill-sql` = 
+lazy val `quill-sql` =
   (project in file("quill-sql"))
     .settings(commonSettings: _*)
     .settings(mimaSettings)
     .dependsOn(`quill-core` % "compile->compile;test->test")
 
-lazy val `quill-jdbc` = 
+lazy val `quill-jdbc` =
   (project in file("quill-jdbc"))
     .settings(commonSettings: _*)
     .settings(mimaSettings)
@@ -43,7 +43,7 @@ lazy val `quill-jdbc` =
     )
     .dependsOn(`quill-sql` % "compile->compile;test->test")
 
-lazy val `quill-finagle-mysql` = 
+lazy val `quill-finagle-mysql` =
   (project in file("quill-finagle-mysql"))
     .settings(commonSettings: _*)
     .settings(mimaSettings)
@@ -55,7 +55,7 @@ lazy val `quill-finagle-mysql` =
     )
     .dependsOn(`quill-sql` % "compile->compile;test->test")
 
-lazy val `quill-async` = 
+lazy val `quill-async` =
   (project in file("quill-async"))
     .settings(commonSettings: _*)
     .settings(mimaSettings)
@@ -69,7 +69,7 @@ lazy val `quill-async` =
     )
     .dependsOn(`quill-sql` % "compile->compile;test->test")
 
-lazy val `quill-cassandra` = 
+lazy val `quill-cassandra` =
   (project in file("quill-cassandra"))
     .settings(commonSettings: _*)
     .settings(mimaSettings)
@@ -81,6 +81,19 @@ lazy val `quill-cassandra` =
       parallelExecution in Test := false
     )
     .dependsOn(`quill-core` % "compile->compile;test->test")
+
+lazy val `quill-couchbase` =
+  (project in file("quill-couchbase"))
+      .settings(commonSettings: _*)
+      .settings(mimaSettings)
+      .settings(
+      libraryDependencies ++= Seq(
+        "org.reactivecouchbase" %% "reactivecouchbase-core" % "0.3"
+      ),
+      parallelExecution in Test := false
+    )
+    .dependsOn(`quill-core` % "compile->compile;test->test")
+
 
 lazy val `tut-sources` = Seq(
   "CASSANDRA.md",
@@ -133,9 +146,9 @@ lazy val commonSettings = ReleasePlugin.extraReleaseCommands ++ Seq(
     "-feature",
     "-unchecked",
     "-Xlint",
-    "-Yno-adapted-args",       
+    "-Yno-adapted-args",
     "-Ywarn-dead-code",
-    "-Ywarn-numeric-widen",   
+    "-Ywarn-numeric-widen",
     "-Ywarn-value-discard",
     "-Xfuture",
     "-Ywarn-unused-import"
