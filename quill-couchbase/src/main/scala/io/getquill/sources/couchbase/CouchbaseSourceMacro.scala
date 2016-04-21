@@ -4,7 +4,7 @@ import scala.reflect.macros.whitebox.Context
 
 import io.getquill.ast._
 import io.getquill.naming.LoadNaming
-// import io.getquill.naming.NamingStrategy
+import io.getquill.naming.NamingStrategy
 import io.getquill.quotation.IsDynamic
 import io.getquill.sources.SourceMacro
 import io.getquill.util.Messages.RichContext
@@ -33,6 +33,6 @@ class CouchbaseSourceMacro(val c: Context) extends SourceMacro {
 
   private def namingType =
     c.prefix.actualType
-      //.baseType(c.weakTypeOf[CouchbaseSource[NamingStrategy, Row, BoundStatement]].typeSymbol)
+      .baseType(c.weakTypeOf[CouchbaseSource[NamingStrategy, Any, Any]].typeSymbol)
       .typeArgs.head
 }

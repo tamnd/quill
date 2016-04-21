@@ -19,4 +19,17 @@ class CouchbaseMirrorSource(config: CouchbaseMirrorSourceConfig)
       Failure(new IllegalStateException())
     else
       Success(())
+
+  override type QueryResult[T] = QueryMirror[T]
+  override type ActionResult[T] = ActionMirror
+
+  case class ActionMirror(n1ql: String, bind: Row)
+
+  def execute(n1ql: String, bind: Row => Row, generated: Option[String] = None) =
+    ActionMirror(n1ql, bind(Row()))
+
+  case class QueryMirror[T](n1ql: String, binds: Row, extractor: Row => T)
+
+  def query[T](n1ql: String, bind: Row => Row, extractor: Row => T) =
+    QueryMirror(n1ql, bind(Row()), extractor)
 }
